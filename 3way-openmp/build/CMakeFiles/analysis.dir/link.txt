@@ -1,0 +1,1 @@
+/opt/software/software/GCCcore/9.3.0/bin/cc -std=c11 -Wall -Wextra -Wshadow -Werror  -rdynamic CMakeFiles/analysis.dir/src/analysis.c.o  -o analysis  libopenmp_min_ascii.a 
