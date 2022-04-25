@@ -1,4 +1,0 @@
-/homes/schoggatt/CIS520/Proj4/3way-openmp/build/CMakeFiles/edit_cache.dir
-/homes/schoggatt/CIS520/Proj4/3way-openmp/build/CMakeFiles/rebuild_cache.dir
-/homes/schoggatt/CIS520/Proj4/3way-openmp/build/CMakeFiles/openmp_min_ascii.dir
-/homes/schoggatt/CIS520/Proj4/3way-openmp/build/CMakeFiles/analysis.dir

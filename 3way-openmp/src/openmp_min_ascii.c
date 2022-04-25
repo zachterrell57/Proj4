@@ -2,22 +2,31 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include <sys/stat.h>
 
 #include <omp.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
+#include <fcntl.h> // for open
+#include <unistd.h> // for close
+
+#define FILE_PATH "/homes/schoggatt/CIS520/Proj4/3way-openmp/test/medium_file.txt"
+
 // #include "openmp_min_ascii.h"
+
+char find_line_min(char *line, int line_length);
+bool find_file_min_chars(int *result, char **lines, int total_lines);
+int get_file_size(char *filename);
 
 char find_line_min(char *line, int line_length)
 {
     int min = INT32_MAX;
-    //printf("This is the line: %s", line);
     int i;
-    for (i = 0; i < line_length - 1; i++){
-        //printf("The character is: %d\n", (int)line[i]);
-        if ((int)line[i] < min && (int)line[i] > 32) // this could be changed but I do not know if we ignore control characters
+    for (i = 0; i < line_length - 1; i++)
+    {
+        if ((int)line[i] < min && (int)line[i] >= 65 && (int)line[i] <= 122)
         {
             min = (int)line[i];
         }
@@ -25,57 +34,70 @@ char find_line_min(char *line, int line_length)
     return min;
 }
 
-bool find_file_min_chars(int *result, char *filename, int total_lines) // add total lines here at some point
+bool find_file_min_chars(int *result, char **lines, int total_lines)
 {
-    FILE *file;
-    char *line = (char *)malloc(2001);
-
-    //file = fopen("/homes/dan/625/wiki_dump.txt", "r");
-    file = fopen(filename, "r");
-
-    int line_number; // max line is 10 for right now to limit run time and ensure accuracy
     int line_length;
-    #pragma omp parallel private(line_length) shared(line_number)
+#pragma omp parallel private(line_length)
     {
-    line_number = 0;
-    line_length = 0;
+        line_length = 0;
 
-    #pragma omp for schedule(static, 10)
-    //int i;
-    for (int i = 0; i < total_lines; i++)
-    {
-        fscanf(file, "%[^\n]\n", line);
-        // if (err == EOF) // we cannot do this since openmp must not have a condition that can be broken upon parallel execution from my reading
-        //     break;
-        line_length = strlen(line);
-        // printf("the line is: %s, The length is: %d\n", line, line_length); 
-        #pragma omp critical
-        { 
-        result[line_number] = (int)(find_line_min(line, line_length));
-        // printf("%d\n", result[line_number]);
-        line_number++;
+#pragma omp for 
+        for (int line_number = 0; line_number < total_lines; line_number++)
+        {
+            line_length = strlen(lines[line_number]);
+#pragma omp critical
+            {
+                result[line_number] = (int)(find_line_min(lines[line_number], line_length));
+            }
         }
     }
-    }
-
-    fclose(file);
     return true;
 }
 
-// int main(int argc, char **argv)
-// {
-//     int result[10];
+int main(int argc, char **argv)
+{
+    // find_file_min_chars(result, argv[1], total_lines);
 
-//     // find_file_min_chars(result, argv[1], total_lines);
+    int file = open(FILE_PATH, O_RDONLY);
 
-//     find_file_min_chars(result, "/homes/dan/625/wiki_dump.txt", 1000);
+    int file_size = get_file_size(FILE_PATH);
 
-//     for(int i = 0; i < 1000; i++)
-//     {
-//         printf("%d : %d\n", i, result[i]);
-//     }
+    char *file_content = (char *)malloc(file_size);
+    read(file, file_content, file_size);
 
-//     // fclose(file);
+    char *buffer_start = NULL;
+    char *line = NULL;
+    char **lines = malloc(file_size);
 
-//     return EXIT_SUCCESS;
-// }
+    line = strtok_r(file_content, "\n", &buffer_start);
+
+    lines[0] = line;
+
+    int total_lines = 1;
+    while((line = strtok_r(NULL, "\n", &buffer_start)))
+    {
+        lines[total_lines] = line;
+        total_lines++;
+    }
+
+    int result[total_lines];
+
+    find_file_min_chars(result, lines, total_lines);
+
+    int i;
+    for (i = 0; i < total_lines; i++)
+    {
+        printf("%d : %d\n", i, result[i]);
+    }
+
+    close(file);
+
+    return EXIT_SUCCESS;
+}
+
+int get_file_size(char *filename)
+{
+    struct stat st;
+    stat(filename, &st);
+    return st.st_size;
+}
