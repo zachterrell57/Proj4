@@ -79,7 +79,7 @@ analysis_EXTERNAL_OBJECTS =
 
 analysis: CMakeFiles/analysis.dir/src/analysis.c.o
 analysis: CMakeFiles/analysis.dir/build.make
-analysis: libopenmp_min_ascii.a
+analysis: libopenmp_min_ascii.so
 analysis: CMakeFiles/analysis.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/homes/schoggatt/CIS520/Proj4/3way-openmp/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking C executable analysis"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/analysis.dir/link.txt --verbose=$(VERBOSE)

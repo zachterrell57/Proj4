@@ -10,7 +10,7 @@ extern "C"
 #include <stdint.h>
 
     char find_line_min(char *line, int line_length);
-    bool find_file_min_chars(int *result, char *filename);
+    bool find_file_min_chars(int *result, char *filename, int total_lines);
 
 #ifdef __cplusplus
 }

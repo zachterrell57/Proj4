@@ -12,31 +12,37 @@ int main(int argc, char **argv)
         return EXIT_FAILURE;
     }
 
-    FILE *file;
-    file = fopen("/homes/schoggatt/CIS520/Proj4/3way-openmp/test/output", "a");
+    // FILE *file;
+    // file = fopen("/homes/schoggatt/CIS520/Proj4/3way-openmp/test/output", "a");
 
     // select algorithm based on the input from the user and print if it completes
 
-    if(!file)
-    {
-        printf("ERROR: Could not find readme.md and cannot write output.\n");
-    }
+    // if(!file)
+    // {
+    //     printf("ERROR: Could not find readme.md and cannot write output.\n");
+    // }
 
-    int result[10];
+    printf("File name: %s\n", argv[1]);
+    printf("File length: %s\n", argv[2]);
+    int total_lines = atoi(argv[2]);
 
-    find_file_min_chars(result, argv[0]);
+    int result[total_lines];
 
-    fprintf(file, "------------------------\n");
+    // find_file_min_chars(result, argv[1], total_lines);
+
+    find_file_min_chars(result, "/homes/dan/625/wiki_dump.txt", 10);
+
+    printf("------------------------\n");
 
     int i;
     for(i = 0; i < 10; i++)
     {
-        fprintf(file, "%d : %d\n", i, result[i]);
+        printf("%d : %d\n", i, result[i]);
     }
 
-    fprintf(file, "------------------------\n");
+    printf("------------------------\n");
 
-    fclose(file);
+    // fclose(file);
 
     return EXIT_SUCCESS;
 }
