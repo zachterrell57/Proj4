@@ -1,5 +1,5 @@
 // example4.c: add all elements in an array in parallel
-#include < stdio.h >
+#include <stdio.h>
 
 int main()
 {

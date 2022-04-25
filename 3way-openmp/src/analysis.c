@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+// #include "openmp_min_ascii.c" for local parallel testing
+
 #include "openmp_min_ascii.h"
 
 int main(int argc, char **argv)
@@ -32,7 +34,7 @@ int main(int argc, char **argv)
 
     find_file_min_chars(result, "/homes/dan/625/wiki_dump.txt", 10);
 
-    printf("------------------------\n");
+    //printf("------------------------\n");
 
     int i;
     for(i = 0; i < 10; i++)
@@ -40,9 +42,27 @@ int main(int argc, char **argv)
         printf("%d : %d\n", i, result[i]);
     }
 
-    printf("------------------------\n");
+    //printf("------------------------\n");
 
     // fclose(file);
 
     return EXIT_SUCCESS;
 }
+
+// int main(int argc, char **argv)
+// {
+//     int result[10];
+
+//     // find_file_min_chars(result, argv[1], total_lines);
+
+//     find_file_min_chars(result, "/homes/dan/625/wiki_dump.txt", 1000);
+
+//     for(int i = 0; i < 1000; i++)
+//     {
+//         printf("%d : %d\n", i, result[i]);
+//     }
+
+//     // fclose(file);
+
+//     return EXIT_SUCCESS;
+// }

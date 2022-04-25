@@ -1,9 +1,14 @@
+// comment this out after testing it is in the header file
+
+#include <stdbool.h>
+#include <stdint.h>
+
 #include <omp.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "openmp_min_ascii.h"
+// #include "openmp_min_ascii.h"
 
 char find_line_min(char *line, int line_length)
 {
@@ -36,8 +41,8 @@ bool find_file_min_chars(int *result, char *filename, int total_lines) // add to
     line_length = 0;
 
     #pragma omp for schedule(static, 10)
-    int i;
-    for (i = 0; i < total_lines; i++)
+    //int i;
+    for (int i = 0; i < total_lines; i++)
     {
         fscanf(file, "%[^\n]\n", line);
         // if (err == EOF) // we cannot do this since openmp must not have a condition that can be broken upon parallel execution from my reading
@@ -56,3 +61,21 @@ bool find_file_min_chars(int *result, char *filename, int total_lines) // add to
     fclose(file);
     return true;
 }
+
+// int main(int argc, char **argv)
+// {
+//     int result[10];
+
+//     // find_file_min_chars(result, argv[1], total_lines);
+
+//     find_file_min_chars(result, "/homes/dan/625/wiki_dump.txt", 1000);
+
+//     for(int i = 0; i < 1000; i++)
+//     {
+//         printf("%d : %d\n", i, result[i]);
+//     }
+
+//     // fclose(file);
+
+//     return EXIT_SUCCESS;
+// }
