@@ -1,0 +1,26 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../include/openmp_min_ascii.h
+stdbool.h
+-
+stdint.h
+-
+
+/homes/schoggatt/CIS520/Proj4/3way-mpi/src/openmp_min_ascii.c
+omp.h
+-
+stdio.h
+-
+stdlib.h
+-
+string.h
+-
+openmp_min_ascii.h
+/homes/schoggatt/CIS520/Proj4/3way-mpi/src/openmp_min_ascii.h
+
