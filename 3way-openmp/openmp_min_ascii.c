@@ -58,8 +58,6 @@ int main(int argc, char **argv)
 {
     omp_set_num_threads(5);
 
-    // find_file_min_chars(result, argv[1], total_lines);
-
     int file = open(FILE_PATH, O_RDONLY);
 
     int file_size = get_file_size(FILE_PATH);
