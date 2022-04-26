@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include "openmp_min_ascii.h"
+#include "mpi_min_ascii.h"
 
 int main(int argc, char **argv)
 {
