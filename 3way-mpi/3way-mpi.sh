@@ -1,3 +1,3 @@
 #!/bin/bash
 
-./openmp_min_ascii
+./mpi_min_ascii

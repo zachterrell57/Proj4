@@ -1,10 +1,17 @@
+#include <stdbool.h>
+#include <stdint.h>
+#include <sys/stat.h>
+
 #include <mpi.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
+#include <fcntl.h> // for open
+#include <unistd.h> // for close
+
 char find_line_min(char *line, int line_length);
-bool find_file_min_chars(int *result, char **lines, int total_lines);
+bool find_file_min_chars(int *result, char *filename, int total_lines);
 int get_file_size(char *filename);
 
 #define FILE_PATH "/homes/zachterrell57Proj4/3way-openmp/test/small_wiki_dump.txt"
@@ -55,11 +62,18 @@ bool find_file_min_chars(int *result, char *filename, int total_lines) // add to
     return true;
 }
 
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
     int i, rc;
     int numtasks, rank;
     MPI_Status Status;
+
+    int file;
+
+    char *buffer_start;
+
+    int total_lines;
+    char **lines;
 
     rc = MPI_Init(&argc, &argv);
     if (rc != MPI_SUCCESS)
@@ -71,37 +85,37 @@ main(int argc, char *argv[])
     MPI_Comm_size(MPI_COMM_WORLD, &numtasks);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    NUM_THREADS = numtasks;
+    int NUM_THREADS = numtasks;
 
     if (rank == 0)
     {
-        int file = open(FILE_PATH, O_RDONLY);
+        file = open(FILE_PATH, O_RDONLY);
 
         int file_size = get_file_size(FILE_PATH);
 
         char *file_content = (char *)malloc(file_size);
         read(file, file_content, file_size);
 
-        char *buffer_start = NULL;
+        buffer_start = NULL;
         char *line = NULL;
-        char **lines = malloc(file_size);
+        lines = malloc(file_size);
 
         line = strtok_r(file_content, "\n", &buffer_start);
 
         lines[0] = line;
 
-        int total_lines = 1;
+        total_lines = 1;
         while ((line = strtok_r(NULL, "\n", &buffer_start)))
         {
             lines[total_lines] = line;
             total_lines++;
         }
-
-        int result[total_lines];
     }
 
+    int result[total_lines];
+
     // Might need to multiply total_lines by the size of each line
-    MPI_Bcast(buffer_start, total_lines, *MPI_CHAR, 0, MPI_COMM_WORLD);
+    MPI_Bcast(buffer_start, total_lines, MPI_CHAR, 0, MPI_COMM_WORLD);
 
     find_file_min_chars(result, lines, total_lines);
 
@@ -120,7 +134,8 @@ main(int argc, char *argv[])
     }
 
     MPI_Finalize();
-    return 0;
+
+    return EXIT_SUCCESS;
 }
 
 int get_file_size(char *filename)
