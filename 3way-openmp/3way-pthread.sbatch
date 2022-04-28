@@ -5,4 +5,4 @@
 #SBATCH --mem-per-cpu=2g
 #SBATCH --ntasks=1
 
-./pthread_min_ascii
+./openmp_min_ascii
