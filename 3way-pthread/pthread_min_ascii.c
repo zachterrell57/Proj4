@@ -13,7 +13,7 @@
 #include <unistd.h> // for close
 
 #define FILE_PATH "/homes/schoggatt/CIS520/Proj4/3way-pthread/test/medium_file.txt"
-#define NUM_OF_THREADS 1
+#define NUM_OF_THREADS 1 // change both in the batch file and here
 
 typedef struct t_parameters
 {
