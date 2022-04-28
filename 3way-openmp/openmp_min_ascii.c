@@ -3,6 +3,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <sys/stat.h>
+#include <time.h> 
+#include <sys/resource.h>
 
 #include <omp.h>
 #include <stdio.h>
@@ -12,7 +14,7 @@
 #include <fcntl.h> // for open
 #include <unistd.h> // for close
 
-#define FILE_PATH "/homes/schoggatt/CIS520/Proj4/3way-openmp/test/partial_wiki_dump.txt"
+#define FILE_PATH "/homes/schoggatt/CIS520/Proj4/3way-openmp/test/small_file.txt"
 
 // #include "openmp_min_ascii.h"
 
@@ -41,8 +43,9 @@ bool find_file_min_chars(int *result, char **lines, int total_lines)
     {
         line_length = 0;
 
-#pragma omp for 
-        for (int line_number = 0; line_number < total_lines; line_number++)
+        int line_number;
+        #pragma omp for 
+        for (line_number = 0; line_number < total_lines; line_number++)
         {
             line_length = strlen(lines[line_number]);
 #pragma omp critical
@@ -56,7 +59,11 @@ bool find_file_min_chars(int *result, char **lines, int total_lines)
 
 int main(int argc, char **argv)
 {
-    omp_set_num_threads(5);
+    double time_spent = 0.0;
+ 
+    clock_t begin = clock();
+
+    omp_set_num_threads(64);
 
     int file = open(FILE_PATH, O_RDONLY);
 
@@ -90,7 +97,17 @@ int main(int argc, char **argv)
         printf("%d: %d\n", i, result[i]);
     }
 
+    struct rusage r_usage;
+
     close(file);
+
+    clock_t end = clock();
+ 
+    time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
+
+    getrusage(RUSAGE_SELF,&r_usage);
+
+    printf("DATA, Runtime: %f, Memory Usage: %ld\n", time_spent, r_usage.ru_maxrss);
 
     return EXIT_SUCCESS;
 }
