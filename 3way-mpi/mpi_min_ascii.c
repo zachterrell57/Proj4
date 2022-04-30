@@ -25,9 +25,9 @@ unsigned char find_min_ascii(char *line){
     int i;
     for (i = 0; i < line_length - 1; i++)
     {        
-        if ((int)line[i] < min && (int)line[i] > 32)
+        if ((line[i] < min) && ((line[i] >= 65 && line[i] <= 90) || (line[i] >= 97 && line[i] <= 122)))
         {
-            min = (int)line[i];
+            min = line[i];
         }
     }
     return min;
@@ -58,16 +58,15 @@ int main(int argc, char *argv[]){
         while(line<LINE_COUNT_MAX){                    
             for(int i = 1; i < numtasks && line < LINE_COUNT_MAX; i++, line++){   
                 //printf("Waiting for data ...\n");                                          
-                MPI_Recv(&result, 1, MPI_UNSIGNED_CHAR, i, line, MPI_COMM_WORLD, MPI_STATUS_IGNORE);       
+                MPI_Recv(&result, sizeof(unsigned char), MPI_UNSIGNED_CHAR, i, line, MPI_COMM_WORLD, MPI_STATUS_IGNORE);       
                 //printf("Got some data!\n");                
                 printf("%d : %d\n", line, (int)result);
             }
         }
     }
     else{
-        file = open(FILE_PATH, O_RDONLY); 
-        int file_size = get_file_size(FILE_PATH);
-        file_size = 10*1024*1024;
+        file = open(FILE_PATH, O_RDONLY);     
+        int file_size = 10*1024*1024;
         char *buffer = malloc(file_size);       
         read(file, buffer, file_size);
         close(file);
@@ -77,7 +76,7 @@ int main(int argc, char *argv[]){
         line_ptrs[0] = strtok_r(buffer, "\n", &next);        
         char *line;
         int total_lines = 1;
-        while(line = strtok_r(NULL, "\n", &next))
+        while((line = strtok_r(NULL, "\n", &next)))
         {            
             line_ptrs[total_lines] = line;     
             total_lines++;       
@@ -86,7 +85,7 @@ int main(int argc, char *argv[]){
         int numworkers;
         for(int i = rank - 1, numworkers = numtasks - 1; line_ptrs[i] != NULL && i < LINE_COUNT_MAX; i += numworkers){            
             int min_ascii = find_min_ascii(line_ptrs[i]);            
-            MPI_Send(&min_ascii, 1, MPI_UNSIGNED_CHAR, 0, i, MPI_COMM_WORLD);
+            MPI_Send(&min_ascii, sizeof(unsigned char), MPI_UNSIGNED_CHAR, 0, i, MPI_COMM_WORLD);
         }        
         free(buffer);
         free(line_ptrs);
