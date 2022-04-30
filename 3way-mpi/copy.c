@@ -11,16 +11,15 @@
 #include <unistd.h> // for close
 
 #define LINE_COUNT_MAX 1000
-//#define FILE_PATH "/homes/zachterrell57Proj4/3way-mpi/test/small_wiki_dump.txt"
-#define FILE_PATH "/homes/dan/625/wiki_dump.txt"
+#define FILE_PATH "/homes/zachterrell57Proj4/3way-mpi/test/small_wiki_dump.txt"
 
-unsigned char find_min_ascii(char *line);
+int find_min_ascii(char *line);
 int get_file_size(char *filename);
 
 int NUM_THREADS;
 
-unsigned char find_min_ascii(char *line){
-    unsigned char min = 0xFF;
+int find_min_ascii(char *line){
+    int min = INT32_MAX;
     int line_length = strlen(line);    
     int i;
     for (i = 0; i < line_length - 1; i++)
@@ -34,6 +33,8 @@ unsigned char find_min_ascii(char *line){
 }
 
 int main(int argc, char *argv[]){
+
+    unsigned char* result = malloc(LINE_COUNT_MAX);
 
     int rc, numtasks, rank;
     MPI_Status Status;
@@ -53,40 +54,38 @@ int main(int argc, char *argv[]){
 
     if(rank == 0){
         int line = 0;
-        MPI_Barrier(MPI_COMM_WORLD);  
-        unsigned char result;      
+        MPI_Barrier(MPI_COMM_WORLD);        
         while(line<LINE_COUNT_MAX){                    
-            for(int i = 1; i < numtasks && line < LINE_COUNT_MAX; i++, line++){   
-                //printf("Waiting for data ...\n");                                          
-                MPI_Recv(&result, 1, MPI_UNSIGNED_CHAR, i, line, MPI_COMM_WORLD, MPI_STATUS_IGNORE);       
-                //printf("Got some data!\n");                
-                printf("%d : %d\n", line, (int)result);
+            for(int i = 1; i < numtasks && line < LINE_COUNT_MAX; i++, line++){  
+                printf("here\n");                              
+                MPI_Recv(&result, 1, MPI_UNSIGNED_CHAR, i, i, MPI_COMM_WORLD, MPI_STATUS_IGNORE);                                      
+                printf("%d : %d\n", line, result[i]);
             }
         }
     }
     else{
         file = open(FILE_PATH, O_RDONLY); 
         int file_size = get_file_size(FILE_PATH);
-        file_size = 10*1024*1024;
         char *buffer = malloc(file_size);       
         read(file, buffer, file_size);
-        close(file);
-          
-        char **line_ptrs = calloc(LINE_COUNT_MAX+1, sizeof(char *));        
+
+        MPI_Barrier(MPI_COMM_WORLD);                
+        char **line_ptrs = calloc(LINE_COUNT_MAX, sizeof(char*));        
         char *next = NULL; 
         line_ptrs[0] = strtok_r(buffer, "\n", &next);        
         char *line;
-        int total_lines = 1;
+        int total_lines;
         while(line = strtok_r(NULL, "\n", &next))
         {            
             line_ptrs[total_lines] = line;     
             total_lines++;       
-        }  
-        MPI_Barrier(MPI_COMM_WORLD);            
+        }        
         int numworkers;
-        for(int i = rank - 1, numworkers = numtasks - 1; line_ptrs[i] != NULL && i < LINE_COUNT_MAX; i += numworkers){            
-            int min_ascii = find_min_ascii(line_ptrs[i]);            
-            MPI_Send(&min_ascii, 1, MPI_UNSIGNED_CHAR, 0, i, MPI_COMM_WORLD);
+        for(int i = rank - 1, numworkers = numtasks - 1; line_ptrs[i] != NULL && i < LINE_COUNT_MAX; i += numworkers){
+            printf("while\n");
+            int min_ascii = find_min_ascii(line_ptrs[i]);
+            printf("%d\n", min_ascii);
+            MPI_Send(&min_ascii, 1, MPI_UNSIGNED_CHAR, 0, rank, MPI_COMM_WORLD);
         }        
         free(buffer);
         free(line_ptrs);
