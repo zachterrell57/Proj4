@@ -63,8 +63,7 @@ int main(int argc, char **argv)
     int file_size = get_file_size(FILE_PATH);
 
     char *file_content = (char *)malloc(file_size);
-    read(file, file_content, file_size);
-    printf("%s", file_content);
+    read(file, file_content, file_size);    
     char *buffer_start = NULL;
     char *line = NULL;
     char **lines = malloc(file_size);
