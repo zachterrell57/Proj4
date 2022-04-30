@@ -3,6 +3,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <sys/stat.h>
+#include <time.h> 
+#include <sys/resource.h>
 
 #include <pthread.h>
 #include <stdio.h>
@@ -12,7 +14,7 @@
 #include <fcntl.h>  // for open
 #include <unistd.h> // for close
 
-#define FILE_PATH "/homes/schoggatt/CIS520/Proj4/3way-pthread/test/medium_file.txt"
+#define FILE_PATH "/homes/dan/625/wiki_dump.txt"
 #define NUM_OF_THREADS 1 // change both in the batch file and here
 
 typedef struct t_parameters
@@ -58,6 +60,10 @@ void * find_file_min_chars(void *args)
 
 int main(int argc, char **argv)
 {
+    double time_spent = 0.0;
+ 
+    clock_t begin = clock();
+
     int file = open(FILE_PATH, O_RDONLY);
 
     int file_size = get_file_size(FILE_PATH);
@@ -106,9 +112,19 @@ int main(int argc, char **argv)
         printf("%d: %d\n", i, result[i]);
     }
 
-    pthread_exit(NULL);
+    struct rusage r_usage;
 
     close(file);
+
+    clock_t end = clock();
+ 
+    time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
+
+    getrusage(RUSAGE_SELF, &r_usage);
+
+    printf("DATA, Runtime: %f, Memory Usage: %ld\n", time_spent, r_usage.ru_maxrss);
+
+    pthread_exit(NULL);
 
     return EXIT_SUCCESS;
 }
