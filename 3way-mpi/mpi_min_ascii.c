@@ -12,7 +12,7 @@
 #include <fcntl.h> // for open
 #include <unistd.h> // for close
 
-#define LINE_COUNT_MAX 1000
+#define LINE_COUNT_MAX 1000000
 //#define FILE_PATH "/homes/zachterrell57Proj4/3way-mpi/test/small_wiki_dump.txt"
 #define FILE_PATH "/homes/dan/625/wiki_dump.txt"
 
@@ -79,7 +79,7 @@ int main(int argc, char *argv[]){
     }
     else{
         file = open(FILE_PATH, O_RDONLY);     
-        int file_size = 10*1024*1024;
+        int file_size = get_file_size(FILE_PATH);
         char *buffer = malloc(file_size);       
         read(file, buffer, file_size);
         close(file);
