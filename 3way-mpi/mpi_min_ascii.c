@@ -1,8 +1,10 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <sys/stat.h>
-
 #include <mpi.h>
+
+#include <time.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -35,6 +37,10 @@ unsigned char find_min_ascii(char *line){
 
 int main(int argc, char *argv[]){
 
+    double time_spent = 0.0;
+ 
+    clock_t begin = clock();
+
     int rc, numtasks, rank;
     MPI_Status Status;
 
@@ -63,6 +69,13 @@ int main(int argc, char *argv[]){
                 printf("%d : %d\n", line, (int)result);
             }
         }
+
+        clock_t end = clock();
+ 
+        time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
+
+        printf("DATA, Runtime: %f\n", time_spent);
+
     }
     else{
         file = open(FILE_PATH, O_RDONLY);     
@@ -76,7 +89,7 @@ int main(int argc, char *argv[]){
         line_ptrs[0] = strtok_r(buffer, "\n", &next);        
         char *line;
         int total_lines = 1;
-        while((line = strtok_r(NULL, "\n", &next)))
+        while((line = strtok_r(NULL, "\n", &next)) && total_lines < LINE_COUNT_MAX)
         {            
             line_ptrs[total_lines] = line;     
             total_lines++;       
