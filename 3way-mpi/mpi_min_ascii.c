@@ -12,14 +12,11 @@
 #include <fcntl.h> // for open
 #include <unistd.h> // for close
 
-#define LINE_COUNT_MAX 1000000
-//#define FILE_PATH "/homes/zachterrell57Proj4/3way-mpi/test/small_wiki_dump.txt"
+#define LINE_COUNT_MAX 1000
 #define FILE_PATH "/homes/dan/625/wiki_dump.txt"
 
 unsigned char find_min_ascii(char *line);
 int get_file_size(char *filename);
-
-int NUM_THREADS;
 
 unsigned char find_min_ascii(char *line){
     unsigned char min = 0xFF;
@@ -36,6 +33,10 @@ unsigned char find_min_ascii(char *line){
 }
 
 int main(int argc, char *argv[]){
+
+    for(int i = 1; i < argc; i++){
+        printf("%s", argv[i]);
+    }
 
     double time_spent = 0.0;
  
@@ -56,6 +57,7 @@ int main(int argc, char *argv[]){
 
     MPI_Comm_size(MPI_COMM_WORLD, &numtasks);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    
 
     if(rank == 0){
         int line = 0;
